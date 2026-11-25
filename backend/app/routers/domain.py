@@ -5,9 +5,18 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
+from app.schemas import ConversionImportPayload, EvaluatePayload
 from app.services import SERVICES
 
 router = APIRouter(prefix="/api/domain", tags=["领域业务"])
+
+
+def _experiment_service():
+    from app.services.experiment import ExperimentService
+    svc = SERVICES.get("experiment")
+    if not svc or not isinstance(svc, ExperimentService):
+        raise HTTPException(404, "实验管理服务不可用")
+    return svc
 
 
 @router.get("/metric_def/{metric_id}/compute")
@@ -33,11 +42,69 @@ def dim_query_execute(query_id: int) -> dict[str, Any]:
 @router.get("/experiment/{experiment_id}/compute-effect")
 def experiment_compute(experiment_id: int) -> dict[str, Any]:
     """实验效果计算。"""
-    from app.services.experiment import ExperimentService
-    svc = SERVICES.get("experiment")
-    if not svc or not isinstance(svc, ExperimentService):
-        raise HTTPException(404, "实验管理服务不可用")
+    svc = _experiment_service()
     return svc.compute_effect(experiment_id)
+
+
+@router.get("/experiment/{experiment_id}/exposures")
+def experiment_exposures(experiment_id: int) -> dict[str, Any]:
+    """该实验已登记的曝光明细（真实曝光组别以此为准）。"""
+    svc = _experiment_service()
+    if svc.get_entry(experiment_id) is None:
+        raise HTTPException(404, f"实验方案 {experiment_id} 不存在")
+    items = svc.list_exposures(experiment_id)
+    return {"items": items, "total": len(items)}
+
+
+@router.post("/experiment/{experiment_id}/conversions/import")
+def experiment_import_conversions(
+    experiment_id: int, payload: ConversionImportPayload
+) -> dict[str, Any]:
+    """从文件导入渠道转化事件明细，按真实曝光组形成可评估转化数据。"""
+    svc = _experiment_service()
+    result, error = svc.import_conversions(experiment_id, payload.filename, payload.content)
+    if result is None:
+        raise HTTPException(400, error)
+    return result
+
+
+@router.get("/experiment/{experiment_id}/conversions")
+def experiment_conversions(experiment_id: int) -> dict[str, Any]:
+    """该实验的导入文件台账与转化事件明细（含未匹配原因）。"""
+    svc = _experiment_service()
+    if svc.get_entry(experiment_id) is None:
+        raise HTTPException(404, f"实验方案 {experiment_id} 不存在")
+    return svc.list_conversion_events(experiment_id)
+
+
+@router.post("/experiment/{experiment_id}/evaluate")
+def experiment_evaluate(experiment_id: int, payload: EvaluatePayload) -> dict[str, Any]:
+    """按统计期发起评估并发出新版报告（晚到转化归入原统计期）。"""
+    svc = _experiment_service()
+    report, error = svc.evaluate(experiment_id, payload.period_start, payload.period_end)
+    if report is None:
+        raise HTTPException(400, error)
+    return report
+
+
+@router.get("/experiment/{experiment_id}/reports")
+def experiment_reports(experiment_id: int) -> dict[str, Any]:
+    """该实验已发出的全部报告版本，最新版标记为可领取。"""
+    svc = _experiment_service()
+    if svc.get_entry(experiment_id) is None:
+        raise HTTPException(404, f"实验方案 {experiment_id} 不存在")
+    items = svc.list_reports(experiment_id)
+    return {"items": items, "total": len(items)}
+
+
+@router.get("/experiment/{experiment_id}/reports/{report_id}")
+def experiment_report_detail(experiment_id: int, report_id: int) -> dict[str, Any]:
+    """回查指定版本的评估报告快照（旧版结果保持原样）。"""
+    svc = _experiment_service()
+    report = svc.get_report(experiment_id, report_id)
+    if report is None:
+        raise HTTPException(404, f"实验 {experiment_id} 的评估报告 {report_id} 不存在")
+    return report
 
 
 @router.get("/significance/{task_id}/run-test")

@@ -59,6 +59,16 @@ class BaseModuleService:
         rows.append(entry)
         return entry, []
 
+    def update_entry(self, entry_id: int, values: dict[str, Any]) -> dict[str, Any] | None:
+        """按字段更新已登记记录（如实验改分组）；状态与流转标记保持不变。"""
+        entry = store.find(self.MODULE, entry_id)
+        if entry is None:
+            return None
+        for field in self.LIST_FIELDS:
+            if field in values and values[field] is not None:
+                entry[field] = values[field]
+        return entry
+
     def run_action(self, entry_id: int, action: str) -> tuple[dict[str, Any] | None, str]:
         entry = store.find(self.MODULE, entry_id)
         if entry is None:

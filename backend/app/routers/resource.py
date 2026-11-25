@@ -91,6 +91,15 @@ def create_entry(module: str, payload: EntryPayload) -> ActionResult:
     return ActionResult(ok=True, message=f"{service.ENTITY}已登记", entry=entry)
 
 
+@router.put("/{module}/{entry_id}", response_model=ActionResult)
+def update_entry(module: str, entry_id: int, payload: EntryPayload) -> ActionResult:
+    service = require_service(module)
+    entry = service.update_entry(entry_id, payload.values)
+    if entry is None:
+        raise HTTPException(status_code=404, detail=f"{service.ENTITY} {entry_id} 不存在或已归档")
+    return ActionResult(ok=True, message=f"{service.ENTITY}已更新", entry=entry)
+
+
 @router.post("/{module}/{entry_id}/actions", response_model=ActionResult)
 def run_action(module: str, entry_id: int, payload: ActionPayload) -> ActionResult:
     service = require_service(module)

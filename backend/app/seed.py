@@ -653,3 +653,29 @@ SEED_ROWS: dict[str, list[dict[str, Any]]] = {
   '下次发送': '报告调度样例3',
   '任务状态': '报告调度样例3'}]
 }
+
+# 已登记的实验曝光明细：转化事件评估时按这里的真实曝光组归集，
+# 不随实验配置（对照组/实验组/样本比例）调整而重新分组。
+SEED_EXPOSURES: list[dict[str, Any]] = [
+    # 实验 1（2026-09-01 周期）：A组 5 个主体、B组 5 个主体
+    {"id": 1, "experiment_id": 1, "exposure_no": "EXP-0001", "subject_id": "U-1001", "group": "A组", "exposed_at": "2026-09-01 09:12:00"},
+    {"id": 2, "experiment_id": 1, "exposure_no": "EXP-0002", "subject_id": "U-1002", "group": "A组", "exposed_at": "2026-09-01 09:40:00"},
+    {"id": 3, "experiment_id": 1, "exposure_no": "EXP-0003", "subject_id": "U-1003", "group": "A组", "exposed_at": "2026-09-01 10:05:00"},
+    {"id": 4, "experiment_id": 1, "exposure_no": "EXP-0004", "subject_id": "U-1004", "group": "A组", "exposed_at": "2026-09-01 11:20:00"},
+    {"id": 5, "experiment_id": 1, "exposure_no": "EXP-0005", "subject_id": "U-1005", "group": "A组", "exposed_at": "2026-09-01 13:15:00"},
+    {"id": 6, "experiment_id": 1, "exposure_no": "EXP-0006", "subject_id": "U-2001", "group": "B组", "exposed_at": "2026-09-01 09:25:00"},
+    {"id": 7, "experiment_id": 1, "exposure_no": "EXP-0007", "subject_id": "U-2002", "group": "B组", "exposed_at": "2026-09-01 10:44:00"},
+    {"id": 8, "experiment_id": 1, "exposure_no": "EXP-0008", "subject_id": "U-2003", "group": "B组", "exposed_at": "2026-09-01 12:31:00"},
+    {"id": 9, "experiment_id": 1, "exposure_no": "EXP-0009", "subject_id": "U-2004", "group": "B组", "exposed_at": "2026-09-01 14:02:00"},
+    {"id": 10, "experiment_id": 1, "exposure_no": "EXP-0010", "subject_id": "U-2005", "group": "B组", "exposed_at": "2026-09-01 15:47:00"},
+    # 实验 2（2026-09-02 周期）
+    {"id": 11, "experiment_id": 2, "exposure_no": "EXP-0011", "subject_id": "U-3001", "group": "A组", "exposed_at": "2026-09-02 09:30:00"},
+    {"id": 12, "experiment_id": 2, "exposure_no": "EXP-0012", "subject_id": "U-3002", "group": "A组", "exposed_at": "2026-09-02 10:10:00"},
+    {"id": 13, "experiment_id": 2, "exposure_no": "EXP-0013", "subject_id": "U-4001", "group": "B组", "exposed_at": "2026-09-02 11:05:00"},
+    {"id": 14, "experiment_id": 2, "exposure_no": "EXP-0014", "subject_id": "U-4002", "group": "B组", "exposed_at": "2026-09-02 14:26:00"},
+    # 实验 3（2026-09-03 周期）
+    {"id": 15, "experiment_id": 3, "exposure_no": "EXP-0015", "subject_id": "U-5001", "group": "A组", "exposed_at": "2026-09-03 08:50:00"},
+    {"id": 16, "experiment_id": 3, "exposure_no": "EXP-0016", "subject_id": "U-5002", "group": "A组", "exposed_at": "2026-09-03 09:35:00"},
+    {"id": 17, "experiment_id": 3, "exposure_no": "EXP-0017", "subject_id": "U-6001", "group": "B组", "exposed_at": "2026-09-03 10:22:00"},
+    {"id": 18, "experiment_id": 3, "exposure_no": "EXP-0018", "subject_id": "U-6002", "group": "B组", "exposed_at": "2026-09-03 16:08:00"},
+]

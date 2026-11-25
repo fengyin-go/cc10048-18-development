@@ -29,3 +29,15 @@ class EntryPayload(BaseModel):
 class ActionPayload(BaseModel):
     action: str
     remark: str | None = None
+
+
+class ConversionImportPayload(BaseModel):
+    """转化明细文件导入：文件名 + CSV 文本内容。"""
+    filename: str = ""
+    content: str = ""
+
+
+class EvaluatePayload(BaseModel):
+    """实验评估入参：统计期留空时回退到实验方案的开始/结束日期。"""
+    period_start: str | None = None
+    period_end: str | None = None

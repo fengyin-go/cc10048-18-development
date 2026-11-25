@@ -77,5 +77,21 @@ npm run dev
 - 列表接口统一返回 `{ items, total, page, size }`，动作接口统一返回 `{ ok, message }`。
 - 状态流转只允许在 `app/services` 里改，路由层不做业务判断。
 
+## 实验转化评估
+
+实验管理模块支持从文件导入渠道转化事件明细并发起评估：
+
+- `GET  /api/domain/experiment/{id}/exposures` 已登记曝光（真实曝光组以此为准）
+- `POST /api/domain/experiment/{id}/conversions/import` 导入转化文件
+  （JSON：`{filename, content}`，CSV 列：回执号、主体标识、转化时间、渠道）
+- `GET  /api/domain/experiment/{id}/conversions` 导入文件台账与转化事件明细
+- `POST /api/domain/experiment/{id}/evaluate` 按统计期发起评估并发出新版报告
+- `GET  /api/domain/experiment/{id}/reports` / `reports/{report_id}` 报告版本列表与回查
+
+规则：转化按主体匹配已登记曝光归入真实曝光组，不按当前实验配置重新分组；
+同一回执号重复导入只计一次；晚到转化按所匹配曝光归入原统计期；
+报告标出采用的来源文件与曝光时间范围，未匹配曝光的记录单独给出原因；
+已发出的报告为不可变快照，旧版本始终可回查。
+
 领域：数据工程
 子方向：数据分析与数据应用

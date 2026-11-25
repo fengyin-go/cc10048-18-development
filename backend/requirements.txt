@@ -5,6 +5,8 @@ anyio==4.16.0
 click==8.5.1
 fastapi==0.163.0
 h11==0.16.0
+httpcore2==2.16.2
+httpx2==2.16.2
 httptools==0.9.0
 idna==3.20
 opentelemetry-api==1.45.2
@@ -14,6 +16,7 @@ python-dotenv==1.2.4
 pytest==8.3.4
 PyYAML==6.0.3
 starlette==1.10.0
+truststore==0.10.5
 typing-inspection==0.4.5
 typing_extensions==4.16.0
 uvicorn==0.54.0
